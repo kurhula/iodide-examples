@@ -1,0 +1,300 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Lecture-5-Basics-of-Pandas - iodide</title>
+<link rel="stylesheet" type="text/css" href="https://iodide.io/stable/iodide.stable.css">
+</head>
+<body>
+<script id="jsmd" type="text/jsmd">
+%% meta
+{
+  "title": "Lecture-5-Basics-of-Pandas",
+  "lastSaved": "2018-10-08T15:43:37.889Z",
+  "languages": {
+    "js": {
+      "pluginType": "language",
+      "languageId": "js",
+      "displayName": "Javascript",
+      "codeMirrorMode": "javascript",
+      "module": "window",
+      "evaluator": "eval",
+      "keybinding": "j",
+      "url": ""
+    },
+    "py": {
+      "languageId": "py",
+      "displayName": "python",
+      "codeMirrorMode": "python",
+      "keybinding": "p",
+      "url": "https://iodide.io/pyodide-demo/pyodide.js",
+      "module": "pyodide",
+      "evaluator": "runPython",
+      "pluginType": "language"
+    }
+  },
+  "lastExport": "2018-10-08T15:43:44.103Z"
+}
+
+%% plugin
+{
+  "languageId": "py",
+  "displayName": "python",
+  "codeMirrorMode": "python",
+  "keybinding": "p",
+  "url": "https://iodide.io/pyodide-demo/pyodide.js",
+  "module": "pyodide",
+  "evaluator": "runPython",
+  "pluginType": "language"
+}
+
+%% js
+pyodide.loadPackage('matplotlib')
+
+%% js
+pyodide.loadPackage('pandas')
+
+%% md
+# Pandas
+
+%% md
+Pandas is an open source, BSD-licensed library providing high-performance, easy-to-use data structures and data analysis tools for the Python programming language.
+
+Library documentation: <a>http://pandas.pydata.org/</a>
+
+%% md
+### General
+
+%% code {"language":"py"}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+%% code {"language":"py"}
+# create a series
+s = pd.Series([1,3,5,np.nan,6,8])
+s
+
+%% code {"language":"py"}
+# create a data frame
+dates = pd.date_range('20130101',periods=6)
+df = pd.DataFrame(np.random.randn(6,4),index=dates,columns=list('ABCD'))
+df
+
+%% code {"language":"py"}
+# another way to create a data frame
+df2 = pd.DataFrame(
+    { 'A' : 1.,
+      'B' : pd.Timestamp('20130102'),
+      'C' : pd.Series(1,index=list(range(4)),dtype='float32'),
+      'D' : np.array([3] * 4,dtype='int32'),
+      'E' : 'foo' })
+df2
+
+%% code {"language":"py"}
+df2.dtypes
+
+%% code {"language":"py"}
+df.head()
+
+%% code {"language":"py"}
+df.index
+
+%% code {"language":"py"}
+df.columns
+
+%% code {"language":"py"}
+df.values
+
+%% code {"language":"py"}
+# quick data summary
+df.describe()
+
+%% code {"language":"py"}
+df.T
+
+%% code {"language":"py"}
+# axis 0 is index, axis 1 is columns
+df.sort_index(axis=1, ascending=False)
+
+%% md
+### Selection
+
+%% code {"language":"py"}
+# select a column (yields a series)
+df['A']
+
+%% code {"language":"py"}
+# column names also attached to the object
+df.A
+
+%% code {"language":"py"}
+# slicing works
+df[0:3]
+
+%% code {"language":"py"}
+df['20130102':'20130104']
+
+%% code {"language":"py"}
+# cross-section using a label
+df.loc[dates[0]]
+
+%% code {"language":"py"}
+# getting a scalar value
+df.loc[dates[0], 'A']
+
+%% code {"language":"py"}
+# select via position
+df.iloc[3]
+
+%% code {"language":"py"}
+df.iloc[3:5,0:2]
+
+%% code {"language":"py"}
+# column slicing
+df.iloc[:,1:3]
+
+%% code {"language":"py"}
+# get a value by index
+df.iloc[1,1]
+
+%% code {"language":"py"}
+# boolean indexing
+df[df.A > 0]
+
+%% code {"language":"py"}
+df[df > 0]
+
+%% code {"language":"py"}
+# filtering
+df3 = df.copy()
+df3['E'] = ['one', 'one', 'two', 'three', 'four', 'three']
+df3[df3['E'].isin(['two', 'four'])]
+
+%% code {"language":"py"}
+# setting examples
+df.at[dates[0],'A'] = 0
+df.iat[0,1] = 0
+df.loc[:, 'D'] = np.array([5] * len(df))
+df
+
+%% code {"language":"py"}
+# dealing with missing data
+df4 = df.reindex(index=dates[0:4],columns=list(df.columns) + ['E'])
+df4.loc[dates[0]:dates[1],'E'] = 1
+df4
+
+%% code {"language":"py"}
+# drop rows with missing data
+df4.dropna(how='any')
+
+%% code {"language":"py"}
+# fill missing data
+df4.fillna(value=5)
+
+%% code {"language":"py"}
+# boolean mask for nan values
+pd.isnull(df4)
+
+%% md
+### Operations
+
+%% code {"language":"py"}
+df.mean()
+
+%% code {"language":"py"}
+# pivot the mean calculation
+df.mean(1)
+
+%% code {"language":"py"}
+# aligning objects with different dimensions
+s = pd.Series([1,3,5,np.nan,6,8],index=dates).shift(2)
+df.sub(s,axis='index')
+
+%% code {"language":"py"}
+# applying functions
+df.apply(np.cumsum)
+
+%% code {"language":"py"}
+df.apply(lambda x: x.max() - x.min())
+
+%% code {"language":"py"}
+# simple count aggregation
+s = pd.Series(np.random.randint(0,7,size=10))
+s.value_counts()
+
+%% md
+### Merging / Grouping / Shaping
+
+%% code {"language":"py"}
+# concatenation
+df = pd.DataFrame(np.random.randn(10, 4))
+pieces = [df[:3], df[3:7], df[7:]]
+pd.concat(pieces)
+
+%% code {"language":"py"}
+# SQL-style join
+left = pd.DataFrame({'key': ['foo', 'foo'], 'lval': [1, 2]})
+right = pd.DataFrame({'key': ['foo', 'foo'], 'rval': [4, 5]})
+pd.merge(left, right, on='key')
+
+%% code {"language":"py"}
+# append
+df = pd.DataFrame(np.random.randn(8, 4), columns=['A', 'B', 'C', 'D'])
+s = df.iloc[3]
+df.append(s, ignore_index=True)
+
+%% code {"language":"py"}
+df = pd.DataFrame(
+    { 'A' : ['foo', 'bar', 'foo', 'bar', 'foo', 'bar', 'foo', 'foo'],
+      'B' : ['one', 'one', 'two', 'three', 'two', 'two', 'one', 'three'],
+      'C' : np.random.randn(8),
+      'D' : np.random.randn(8) })
+df
+
+%% code {"language":"py"}
+# group by
+df.groupby('A').sum()
+
+%% code {"language":"py"}
+# group by multiple columns
+df.groupby(['A','B']).sum()
+
+%% code {"language":"py"}
+df = pd.DataFrame(
+    { 'A' : ['one', 'one', 'two', 'three'] * 3,
+      'B' : ['A', 'B', 'C'] * 4,
+      'C' : ['foo', 'foo', 'foo', 'bar', 'bar', 'bar'] * 2,
+      'D' : np.random.randn(12),
+      'E' : np.random.randn(12)} )
+df
+
+%% code {"language":"py"}
+# pivot table
+pd.pivot_table(df, values='D', columns=['C'])
+
+%% md
+### Time Series
+
+%% code {"language":"py"}
+# time period resampling
+rng = pd.date_range('1/1/2012', periods=100, freq='S')
+ts = pd.Series(np.random.randint(0, 500, len(rng)), index=rng)
+ts.resample('5Min', how='sum')
+
+%% code {"language":"py"}
+rng = pd.date_range('1/1/2012', periods=5, freq='M')
+ts = pd.Series(np.random.randn(len(rng)), index=rng)
+ts
+
+%% code {"language":"py"}
+ps = ts.to_period()
+ps.to_timestamp()
+
+%% js
+</script>
+<div id='page'></div>
+<script src='https://iodide.io/stable/iodide.stable.js'></script>
+</body>
+</html>

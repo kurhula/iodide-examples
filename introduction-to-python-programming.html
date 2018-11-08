@@ -1,0 +1,1075 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Lecture-1-Introduction-to-Python-Programming - iodide</title>
+<link rel="stylesheet" type="text/css" href="https://iodide.io/stable/iodide.stable.css">
+</head>
+<body>
+<script id="jsmd" type="text/jsmd">
+%% meta
+{
+  "title": "Lecture-1-Introduction-to-Python-Programming",
+  "lastSaved": "2018-10-04T09:22:12.477Z",
+  "languages": {
+    "js": {
+      "pluginType": "language",
+      "languageId": "js",
+      "displayName": "Javascript",
+      "codeMirrorMode": "javascript",
+      "module": "window",
+      "evaluator": "eval",
+      "keybinding": "j",
+      "url": ""
+    },
+    "py": {
+      "languageId": "py",
+      "displayName": "python",
+      "codeMirrorMode": "python",
+      "keybinding": "p",
+      "url": "https://iodide.io/pyodide-demo/pyodide.js",
+      "module": "pyodide",
+      "evaluator": "runPython",
+      "pluginType": "language"
+    }
+  },
+  "lastExport": "2018-10-04T15:13:14.844Z"
+}
+
+%% plugin
+{
+  "languageId": "py",
+  "displayName": "python",
+  "codeMirrorMode": "python",
+  "keybinding": "p",
+  "url": "https://iodide.io/pyodide-demo/pyodide.js",
+  "module": "pyodide",
+  "evaluator": "runPython",
+  "pluginType": "language"
+}
+
+%% md
+# Introduction to Python programming
+
+%% md
+## Python program files
+
+%% md
+* Python code is usually stored in text files with the file ending \`.py`:
+
+		myprogram.py
+
+* Every line in a Python program file is assumed to be a Python statement, or part thereof. 
+
+	* The only exception is comment lines, which start with the character `#` (optionally preceded by an arbitrary number of white-space characters, i.e., tabs or spaces). Comment lines are usually ignored by the Python interpreter.
+
+
+* To run our Python program from the command line we use:
+
+		$ python myprogram.py
+
+* On UNIX systems it is common to define the path to the interpreter on the first line of the program (note that this is a comment line as far as the Python interpreter is concerned):
+
+		#!/usr/bin/env python
+
+If we do, and if we additionally set the file script to be executable, we can run the program like this:
+
+		$ myprogram.py
+
+%% md
+### Character encoding
+
+%% md
+The standard character encoding is ASCII, but we can use any other encoding, for example UTF-8. To specify that UTF-8 is used we include the special line
+
+		# -*- coding: UTF-8 -*-
+
+at the top of the file.
+
+Other than these two *optional* lines in the beginning of a Python code file, no additional code is required for initializing a program.
+
+%% md
+## Modules
+
+%% md
+Most of the functionality in Python is provided by *modules*. The Python Standard Library is a large collection of modules that provides *cross-platform* implementations of common facilities such as access to the operating system, file I/O, string management, network communication, and much more.
+
+%% md
+### References
+
+%% md
+* The Python Language Reference: http://docs.python.org/2/reference/index.html
+* The Python Standard Library: http://docs.python.org/2/library/
+
+To use a module in a Python program it first has to be imported. A module can be imported using the `import` statement. For example, to import the module `math`, which contains many standard mathematical functions, we can do:
+
+%% code {"language":"py"}
+import math
+
+%% md
+This includes the whole module and makes it available for use later in the program. For example, we can do:
+
+%% code {"language":"py"}
+import math
+
+x = math.cos(2 * math.pi)
+
+x
+
+%% md
+Alternatively, we can chose to import all symbols (functions and variables) in a module to the current namespace (so that we don't need to use the prefix \"`math.`\" every time we use something from the `math` module:
+
+%% code {"language":"py"}
+from math import *
+
+x = cos(2 * pi)
+
+x
+
+%% md
+This pattern can be very convenient, but in large programs that include many modules it is often a good idea to keep the symbols from each module in their own namespaces, by using the `import math` pattern. This would elminate potentially confusing problems with name space collisions.
+
+As a third alternative, we can chose to import only a few selected symbols from a module by explicitly listing which ones we want to import instead of using the wildcard character `*`:
+
+%% code {"language":"py"}
+from math import cos, pi
+
+x = cos(2 * pi)
+
+x
+
+%% md
+### Looking at what a module contains, and its documentation
+
+%% md
+Once a module is imported, we can list the symbols it provides using the `dir` function:
+
+%% code {"language":"py"}
+import math
+
+dir(math)
+
+%% md
+And using the function `help` we can get a description of each function (almost .. not all functions have docstrings, as they are technically called, but the vast majority of functions are documented this way).
+
+%% code {"language":"py"}
+help(math.log)
+# XXX: Why is this not working?
+
+%% code {"language":"py"}
+log(10)
+
+%% code {"language":"py"}
+log(10, 2)
+
+%% md
+We can also use the `help` function directly on modules: Try
+
+	help.math()
+
+Some very useful modules form the Python standard library are `os`, `sys`, `math`, `shutil`, `re`, `subprocess`, `multiprocessing`, `threading`.
+
+A complete lists of standard modules for Python 2 and Python 3 are available at http://docs.python.org/2/library/ and http://docs.python.org/3/library/, respectively.
+
+##### XXX: Can we have an extra feature for links directly recognized in MD
+
+%% md
+## Variables and types
+
+### Symbol names
+
+Variable names in Python can contain alphanumerical characters `a-z`, `A-Z`, `0-9` and some special characters such as `_`. Normal variable names must start with a letter.
+
+By convention, variable names start with a lower-case letter, and Class names start with a capital letter.
+
+In addition, there are a number of Python keywords that cannot be used as variable names. These keywords are:
+
+    and, as, assert, break, class, continue, def, del, elif, else, except,
+    exec, finally, for, from, global, if, import, in, is, lambda, not, or,
+    pass, print, raise, return, try, while, with, yield,
+
+Note: Be aware of the keyword `lambda`, which could easily be a natural variable name in a scientific program. But being a keyword, it cannot be used as a variable name.
+
+### Assignment
+
+The assignment operator in Python is `=`. Python is a dynamically typed language, so we do not need to specify the type of a variable when we create one.
+
+Assigning a value to a new variable creates the variable:
+
+%% code {"language":"py"}
+# variable assignments
+x = 1.0
+my_variable = 12.2
+
+%% md
+Although not explicitly specified, a variable does have a type associated with it. The type is derived from the value that was assigned to it.
+
+%% code {"language":"py"}
+type(x)
+
+%% md
+If we assign a new value to a variable, its type can change.
+
+%% code {"language":"py"}
+x = 1
+type(x)
+
+%% md
+If we try to use a variable that has not yet been defined we get an `NameError`:
+
+%% code {"language":"py"}
+print(y)
+
+%% md
+### Fundamental types
+
+%% code {"language":"py"}
+# integers
+x = 1
+type(x)
+
+%% code {"language":"py"}
+# float
+x = 1.0
+type(x)
+
+%% code {"language":"py"}
+# boolean
+b1 = True
+b2 = False
+
+type(b1)
+
+%% code {"language":"py"}
+# complex numbers: note the use of `j` to specify the imaginary part
+x = 1.0 - 1.0j
+type(x)
+
+%% code {"language":"py"}
+x
+
+%% code {"language":"py"}
+x.real, x.imag
+
+%% md
+### Type utility functions
+
+The module `types` contains a number of type name definitions that can be used to test if variables are of certain types:
+
+%% code {"language":"py"}
+import types
+
+# print all types defined in the `types` module
+dir(types)
+
+%% code {"language":"py"}
+x = 1.0
+
+# check if the variable x is a float
+type(x) is float
+
+%% code {"language":"py"}
+# check if the variable x is an int
+type(x) is int
+
+%% md
+We can also use the `isinstance` method for testing types of variables:
+
+%% code {"language":"py"}
+isinstance(x, float)
+
+%% md
+### Type casting
+
+%% code {"language":"py"}
+x = 1.5
+
+x, type(x)
+
+%% code {"language":"py"}
+x = int(x)
+
+x, type(x)
+
+%% code {"language":"py"}
+z = complex(x)
+
+z, type(z)
+
+%% code {"language":"py"}
+x = float(z)
+
+%% md
+Complex variables cannot be cast to floats or integers. We need to use `z.real` or `z.imag` to extract the part of the complex number we want:
+
+%% code {"language":"py"}
+y = bool(z.real)
+
+z.real, " -> ", y, type(y)
+
+%% code {"language":"py"}
+y = bool(z.imag)
+
+z.imag, " -> ", y, type(y)
+
+%% md
+## Operators and comparisons
+
+Most operators and comparisons in Python work as one would expect:
+
+* Arithmetic operators `+`, `-`, `*`, `/`, `//` (integer division), '**' power
+
+%% code {"language":"py"}
+1 + 2, 1 - 2, 1 * 2, 1 / 2
+
+%% code {"language":"py"}
+1.0 + 2.0, 1.0 - 2.0, 1.0 * 2.0, 1.0 / 2.0
+
+%% code {"language":"py"}
+# Integer division of float numbers
+3.0 // 2.0
+
+%% code {"language":"py"}
+# Note! The power operators in python isn't ^, but **
+2 ** 2
+
+%% md
+Note: The `/` operator always performs a floating point division in Python 3.x.
+This is not true in Python 2.x, where the result of `/` is always an integer if the operands are integers.
+to be more specific, `1/2 = 0.5` (`float`) in Python 3.x, and `1/2 = 0` (`int`) in Python 2.x (but `1.0/2 = 0.5` in Python 2.x).
+
+%% md
+* The boolean operators are spelled out as the words `and`, `not`, `or`.
+
+%% code {"language":"py"}
+True and False
+
+%% code {"language":"py"}
+not False
+
+%% code {"language":"py"}
+True or False
+
+%% md
+* Comparison operators `>`, `<`, `>=` (greater or equal), `<=` (less or equal), `==` equality, `is` identical.
+
+%% code {"language":"py"}
+2 > 1, 2 < 1
+
+%% code {"language":"py"}
+2 > 2, 2 < 2
+
+%% code {"language":"py"}
+2 >= 2, 2 <= 2
+
+%% code {"language":"py"}
+# equality
+[1,2] == [1,2]
+
+%% code {"language":"py"}
+# objects identical?
+l1 = l2 = [1,2]
+
+l1 is l2
+
+%% md
+## Compound types: Strings, List and dictionaries
+### Strings
+Strings are the variable type that is used for storing text messages.
+
+%% code {"language":"py"}
+s = "Hello world"
+type(s)
+
+%% code {"language":"py"}
+# length of the string: the number of characters
+len(s)
+
+%% code {"language":"py"}
+# replace a substring in a string with something else
+s2 = s.replace("world", "test")
+s2
+
+%% md
+We can index a character in a string using `[]`
+
+%% code {"language":"py"}
+s[0]
+
+%% md
+**Heads up MATLAB users:** Indexing start at 0!
+
+We can extract a part of a string using the syntax `[start:stop]`, which extracts characters between index `start` and `stop` -1 (the character at index `stop` is not included):
+
+%% code {"language":"py"}
+s[0:5]
+
+%% code {"language":"py"}
+s[4:5]
+
+%% md
+If we omit either (or both) of `start` or `stop` from `[start:stop]`, the default is the beginning and the end of the string, respectively:
+
+%% md
+s[:5]
+
+%% code {"language":"py"}
+s[6:]
+
+%% code {"language":"py"}
+s[:]
+
+%% md
+We can also define the step size using the syntax `[start:end:step]` (the default value for `step` is 1, as we saw above):
+
+%% code {"language":"py"}
+s[::1]
+
+%% code {"language":"py"}
+s[::2]
+
+%% md
+This technique is called *slicing*. Read more about the syntax here: http://docs.python.org/release/2.7.3/library/functions.html?highlight=slice#slice
+
+%% md
+Python has a very rich set of functions for text processing. See for example http://docs.python.org/2/library/string.html for more information.
+
+%% md
+#### String formatting examples
+
+%% code {"language":"py"}
+"str1", "str2", "str3"  # The print statement concatenates strings with a space
+
+%% code {"language":"py"}
+"str1", 1.0, False, -1j  # The print statements converts all arguments to strings
+
+%% code {"language":"py"}
+"str1" + "str2" + "str3" # strings added with + are concatenated without space
+
+%% code {"language":"py"}
+"value = %f" % 1.0
+
+%% code {"language":"py"}
+# this formatting creates a string
+s2 = "value1 = %.2f. value2 = %d" % (3.1415, 1.5)
+
+s2
+
+%% code {"language":"py"}
+# alternative, more intuitive way of formatting a string 
+s3 = 'value1 = {0}, value2 = {1}'.format(3.1415, 1.5)
+
+s3
+
+%% md
+### List
+Lists are very similar to strings, except that each element can be of any type.
+
+The syntax for creating lists in Python is `[...]`:
+
+%% code {"language":"py"}
+l = [1,2,3,4]
+
+type(l), l
+
+%% md
+We can use the same slicing techniques to manipulate lists as we could use on strings:
+
+%% code {"language":"py"}
+l, l[1:3], l[::2]
+
+%% md
+**Heads up MATLAB users:** Indexing starts at 0!
+
+%% code {"language":"py"}
+l[0]
+
+%% md
+Elements in a list do not all have to be of the same type:
+
+%% code {"language":"py"}
+l = [1, 'a', 1.0, 1-1j]
+l
+
+%% md
+Python lists can be inhomogeneous and arbitrarily nested:
+
+%% code {"language":"py"}
+nested_list = [1, [2, [3, [4, [5]]]]]
+
+nested_list
+
+%% md
+Lists play a very important role in Python. For example they are used in loops and other flow control structures (discussed below). There are a number of convenient functions for generating lists of various types, for example the `range` function:
+
+%% code {"language":"py"}
+start = 10
+stop = 30
+step = 2
+
+range(start, stop, step) #XXX: Bizzare result, check again
+
+%% code {"language":"py"}
+# in python 3 range generates an iterator, which can be converted to a list using 'list(...)'.
+# It has no effect in python 2
+list(range(start, stop, step))
+
+%% code {"language":"py"}
+list(range(-10, 10))
+
+%% code {"language":"py"}
+s
+
+%% code {"language":"py"}
+# convert a string to a list by type casting:
+s2 = list(s)
+
+s2
+
+%% code {"language":"py"}
+# sorting lists
+s2.sort()
+
+s2
+
+%% md
+#### Adding, inserting, modifying, and removing elements from lists
+
+%% code {"language":"py"}
+# create a new empty list
+l = []
+
+# add an elements using `append`
+l.append("A")
+l.append("d")
+l.append("d")
+
+l
+
+%% md
+We can modify lists by assigning new values to elements in the list. In technical jargon, lists are *mutable*.
+
+%% code {"language":"py"}
+l[1] = "p"
+l[2] = "p"
+
+l
+
+%% code {"language":"py"}
+l[1:3] = ["d", "d"]
+
+l
+
+%% md
+Insert an element at an specific index using `insert`
+
+%% code {"language":"py"}
+l.insert(0, "i")
+l.insert(1, "n")
+l.insert(2, "s")
+l.insert(3, "e")
+l.insert(4, "r")
+l.insert(5, "t")
+
+l
+
+%% md
+Remove first element with specific value using 'remove'
+
+%% code {"language":"py"}
+l.remove("A")
+
+l
+
+%% md
+Remove an element at a specific location using `del`:
+
+%% code {"language":"py"}
+del l[7]
+del l[6]
+
+l
+
+%% md
+See `help(list)` for more details, or read the online documentation
+
+%% md
+### Tuples
+
+Tuples are like lists, except that they cannot be modified once created, that is they are *immutable*.
+
+In Python, tuples are created using the syntax `(..., ..., ...)`, or even `..., ...`:
+
+%% code {"language":"py"}
+point = (10, 20)
+
+point, type(point)
+
+%% code {"language":"py"}
+point = 10, 20
+
+point, type(point)
+
+%% md
+We can unpack a tuple by assigning it to a comma-separated list of variables:
+
+%% code {"language":"py"}
+x, y = point
+
+"x =", x
+
+%% code {"language":"py"}
+"y =", y
+
+%% md
+If we try to assign a new value to an element in a tuple we get an error:
+
+%% code {"language":"py"}
+point[0] = 20
+
+%% md
+### Dictionaries
+
+Dictionaries are also like lists, except that each element is a key-value pair. The syntax for dictionaries is `{key1 : value1, ...}`:
+
+%% code {"language":"py"}
+params = {"parameter1" : 1.0,
+          "parameter2" : 2.0,
+          "parameter3" : 3.0,}
+
+type(params), params
+
+%% code {"language":"py"}
+"parameter1 = " + str(params["parameter1"])
+
+%% code {"language":"py"}
+"parameter2 = " + str(params["parameter2"])
+
+%% code {"language":"py"}
+"parameter3 = " + str(params["parameter3"])
+
+%% code {"language":"py"}
+params["parameter1"] = "A"
+params["parameter2"] = "B"
+
+# add a new entry
+params["parameter4"] = "D"
+
+"parameter1 = " + str(params["parameter1"])
+
+%% code {"language":"py"}
+"parameter2 = " + str(params["parameter2"])
+
+%% code {"language":"py"}
+"parameter3 = " + str(params["parameter3"])
+
+%% code {"language":"py"}
+"parameter4 = " + str(params["parameter4"])
+
+%% md
+## Control Flow
+### Conditional statements: if, elif, else
+
+The Python syntax for conditional execution of code uses the keywords `if`, `elif` (else if), `else`:
+
+%% code {"language":"py"}
+statement1 = False
+statement2 = False
+
+if statement1:
+    "statement1 is True"
+    
+elif statement2:
+    "statement2 is True"
+    
+else:
+    "statement1 and statement2 are False"
+# XXX: Doesn't work either with or without print. Check reason
+
+%% md
+For the first time, here we encounted a peculiar and unusual aspect of the Python programming language: Program blocks are defined by their indentation level.
+
+Compare to the equivalent C code:
+
+    if (statement1)
+    {
+        printf("statement1 is True\n");
+    }
+    else if (statement2)
+    {
+        printf("statement2 is True\n");
+    }
+    else
+    {
+        printf("statement1 and statement2 are False\n");
+    }
+
+In C blocks are defined by the enclosing curly brakets `{` and `}`. And the level of indentation (white space before the code statements) does not matter (completely optional).
+
+But in Python, the extent of a code block is defined by the indentation level (usually a tab or say four white spaces). This means that we have to be careful to indent our code correctly, or else we will get syntax errors.
+
+%% md
+#### Examples:
+
+%% code {"language":"py"}
+statement1 = statement2 = True
+
+if statement1:
+    if statement2:
+        "both statement1 and statement2 are True"
+# XXX: Check this one too
+
+%% code {"language":"py"}
+# Bad indentation!
+if statement1:
+    if statement2:
+    print("both statement1 and statement2 are True")  # this line is not properly indented
+
+%% code {"language":"py"}
+statement1 = False 
+
+if statement1:
+    print("printed if statement1 is True")
+    
+    print("still inside the if block")
+
+%% code {"language":"py"}
+if statement1:
+    "printed if statement1 is True"
+    
+"now outside the if block"
+
+%% md
+## Loops
+
+In Python, loops can be programmed in a number of different ways. The most common is the `for` loop, which is used together with iterable objects, such as lists. The basic syntax is:
+
+### **`for` loops**:
+
+%% code {"language":"py"}
+for x in [1,2,3]:
+    x
+# XXX: Seems like this is the problem with loops and statements. We know that `print` won't give anything
+
+%% md
+The `for` loop iterates over the elements of the supplied list, and executes the containing block once for each element. Any kind of list can be used in the `for` loop. For example:
+
+%% code {"language":"py"}
+for x in range(4): # by default range start at 0
+    print(x)
+
+%% code {"language":"py"}
+for x in range(-3,3):
+    print(x)
+
+%% code {"language":"py"}
+for word in ["scientific", "computing", "with", "python"]:
+    print(word)
+
+%% md
+To iterate over key-value pairs of a dictionary:
+
+%% code {"language":"py"}
+for key, value in params.items():
+    print(key + " = " + str(value))
+
+%% md
+Sometimes it is useful to have access to the indices of the values when iterating over a list. We can use the `enumerate` function for this:
+
+%% code {"language":"py"}
+for idx, x in enumerate(range(-3,3)):
+    print(idx, x)
+
+%% md
+### List comprehensions: Creating lists using `for` loops:
+
+A convenient and compact way to initialize lists:
+
+%% code {"language":"py"}
+l1 = [x**2 for x in range(0,5)]
+
+l1
+
+%% md
+### `while` loops:
+
+%% code {"language":"py"}
+i = 0
+
+while i < 5:
+    i
+    
+    i = i + 1
+    
+"done"
+
+%% md
+## Functions
+
+A function in Python is defined using the keyword `def`, followed by a function name, a signature within parentheses `()`, and a colon `:`. The following code, with one additional level of indentation, is the function body.
+
+%% code {"language":"py"}
+def func0():   
+    return "test"
+
+%% code {"language":"py"}
+func0()
+
+%% md
+Optionally, but highly recommended, we can define a so called \"docstring\", which is a description of the functions purpose and behaivor. The docstring should follow directly after the function definition, before the code in the function body.
+
+%% code {"language":"py"}
+def func1(s):
+    """
+    Print a string 's' and tell how many characters it has    
+    """
+    
+    return (s + " has " + str(len(s)) + " characters")
+
+%% code {"language":"py"}
+help(func1)
+
+# XXX: Not all built-in function work
+
+%% code {"language":"py"}
+func1("test")
+
+%% md
+Functions that returns a value use the `return` keyword:
+
+%% code {"language":"py"}
+def square(x):
+    """
+    Return the square of x.
+    """
+    return x ** 2
+
+%% code {"language":"py"}
+square(4)
+
+%% md
+We can return multiple values from a function using tuples (see above):
+
+%% code {"language":"py"}
+def powers(x):
+    """
+    Return a few powers of x.
+    """
+    return x ** 2, x ** 3, x ** 4
+
+%% code {"language":"py"}
+powers(3)
+
+%% code {"language":"py"}
+x2, x3, x4 = powers(3)
+
+x3
+
+%% md
+### Default argument and keyword arguments
+
+In a definition of a function, we can give default values to the arguments the function takes:
+
+%% code {"language":"py"}
+def myfunc(x, p=2, debug=False):
+    if debug:
+        print("evaluating myfunc for x = " + str(x) + " using exponent p = " + str(p))
+    return x**p
+
+%% md
+If we don't provide a value of the `debug` argument when calling the the function `myfunc` it defaults to the value provided in the function definition:
+
+%% code {"language":"py"}
+myfunc(5)
+
+%% code {"language":"py"}
+myfunc(5, debug=True)
+# XXX: Same problem with `print`
+
+%% md
+If we explicitly list the name of the arguments in the function calls, they do not need to come in the same order as in the function definition. This is called *keyword* arguments, and is often very useful in functions that takes a lot of optional arguments.
+
+%% code {"language":"py"}
+myfunc(p=3, debug=True, x=7)
+
+%% md
+### Unnamed functions (lambda function)
+
+In Python we can also create unnamed functions, using the `lambda` keyword:
+
+%% code {"language":"py"}
+f1 = lambda x: x**2
+    
+# is equivalent to 
+
+def f2(x):
+    return x**2
+
+%% code {"language":"py"}
+f1(2), f2(2)
+
+%% md
+This technique is useful for example when we want to pass a simple function as an argument to another function, like this:
+
+%% code {"language":"py"}
+# map is a built-in python function
+map(lambda x: x**2, range(-3,4))
+
+# Not what expected, seems like this is problem due to eval
+# XXX: Why not check for what type of code it is, if its statement, use eval, otherwise exec
+# At NEXEDI, we did something similar to fix this problem:
+# https://lab.nexedi.com/nexedi/erp5/blob/master/bt5/erp5_data_notebook/ExtensionTemplateItem/portal_components/extension.erp5.JupyterCompile.py#L336
+
+%% code {"language":"py"}
+# in python 3 we can use `list(...)` to convert the iterator to an explicit list
+list(map(lambda x: x**2, range(-3,4)))
+
+%% md
+## Classes
+
+Classes are the key features of object-oriented programming. A class is a structure for representing an object and the operations that can be performed on the object.
+
+In Python a class can contain attributes (variables) and methods (functions).
+
+A class is defined almost like a function, but using the class keyword, and the class definition usually contains a number of class method definitions (a function in a class).
+
+Each class method should have an argument self as its first argument. This object is a self-reference.
+
+* Some class method names have special meaning, for example:
+
+	* `__init__`: The name of the method that is invoked when the object is first created.
+	* `__str__` : A method that is invoked when a simple string representation of the class is needed, as for example when printed.
+
+There are many more, see http://docs.python.org/2/reference/datamodel.html#special-method-names
+
+%% code {"language":"py"}
+class Point:
+    """
+    Simple class for representing a point in a Cartesian coordinate system.
+    """
+    
+    def __init__(self, x, y):
+        """
+        Create a new Point at x, y.
+        """
+        self.x = x
+        self.y = y
+        
+    def translate(self, dx, dy):
+        """
+        Translate the point by dx and dy in the x and y direction.
+        """
+        self.x += dx
+        self.y += dy
+        
+    def __str__(self):
+        return("Point at [%f, %f]" % (self.x, self.y))
+
+%% md
+To create a new instance of a class:
+
+%% code {"language":"py"}
+p1 = Point(0, 0) # this will invoke the __init__ method in the Point class
+
+print(p1)         		# this will invoke the __str__ method
+
+%% md
+To invoke a class method in the class instance `p`:
+
+%% code {"language":"py"}
+p2 = Point(1, 1)
+
+p1.translate(0.25, 1.5)
+
+p1, p2
+
+%% md
+Note that calling class methods can modifiy the state of that particular class instance, but does not effect other class instances or any global variables.
+
+That is one of the nice things about object-oriented design: code such as functions and related variables are grouped in separate and independent entities.
+
+%% md
+## Modules
+
+One of the most important concepts in good programming is to reuse code and avoid repetitions.
+
+The idea is to write functions and classes with a well-defined purpose and scope, and reuse these instead of repeating similar code in different part of a program (modular programming). The result is usually that readability and maintainability of a program is greatly improved. What this means in practice is that our programs have fewer bugs, are easier to extend and debug/troubleshoot.
+
+Python supports modular programming at different levels. Functions and classes are examples of tools for low-level modular programming. Python modules are a higher-level modular programming construct, where we can collect related variables, functions and classes in a module. A python module is defined in a python file (with file-ending `.py`), and it can be made accessible to other Python modules and programs using the `import` statement.
+
+%% md
+## Exceptions
+
+In Python errors are managed with a special language construct called "Exceptions". When errors occur exceptions can be raised, which interrupts the normal program flow and fallback to somewhere else in the code where the closest try-except statement is defined.
+
+To generate an exception we can use the `raise` statement, which takes an argument that must be an instance of the class `BaseException` or a class derived from it.
+
+%% code {"language":"py"}
+raise Exception("description of the error")
+
+%% md
+A typical use of exceptions is to abort functions when some error condition occurs, for example:
+
+	def my_function(arguments):
+
+    	if not verify(arguments):
+        	raise Exception("Invalid arguments")
+
+    	# rest of the code goes here
+
+To gracefully catch errors that are generated by functions and class methods, or by the Python interpreter itself, use the `try` and `except` statements:
+
+    try:
+        # normal code goes here
+    except:
+        # code for error handling goes here
+        # this code is not executed unless the code
+        # above generated an error
+
+For example:
+
+%% code {"language":"py"}
+try:
+    "test"
+    # generate an error: the variable test is not defined
+    print(test)
+except:
+    "Caught an exception"
+
+# XXX: Same `print` problem 
+
+%% md
+To get information about the error, we can access the `Exception` class instance that describes the exception by using for example:
+
+	except Exception as e:
+
+%% code {"language":"py"}
+try:
+    print("test")
+    # generate an error: the variable test is not defined
+    print(test)
+except Exception as e:
+    print("Caught an exception:" + str(e))
+
+%% md
+## Further reading
+
+* http://www.python.org - The official web page of the Python programming language.
+* http://www.python.org/dev/peps/pep-0008 - Style guide for Python programming. Highly recommended.
+* http://www.greenteapress.com/thinkpython/ - A free book on Python programming.
+* [Python Essential Reference](http://www.amazon.com/Python-Essential-Reference-4th-Edition/dp/0672329786) - A good reference book on Python programming.
+
+%% md
+## Versions
+
+%% code {"language":"py"}
+import sys
+sys.version
+
+%% code {"language":"py"}
+</script>
+<div id='page'></div>
+<script src='https://iodide.io/stable/iodide.stable.js'></script>
+</body>
+</html>

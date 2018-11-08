@@ -1,0 +1,137 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Lecture-4-Pandas For Stats & ML - iodide</title>
+<link rel="stylesheet" type="text/css" href="https://iodide.io/stable/iodide.stable.css">
+</head>
+<body>
+<script id="jsmd" type="text/jsmd">
+%% meta
+{
+  "title": "Lecture-4-Pandas For Stats & ML",
+  "lastSaved": "2018-10-08T13:45:03.204Z",
+  "languages": {
+    "js": {
+      "pluginType": "language",
+      "languageId": "js",
+      "displayName": "Javascript",
+      "codeMirrorMode": "javascript",
+      "module": "window",
+      "evaluator": "eval",
+      "keybinding": "j",
+      "url": ""
+    },
+    "py": {
+      "languageId": "py",
+      "displayName": "python",
+      "codeMirrorMode": "python",
+      "keybinding": "p",
+      "url": "https://iodide.io/pyodide-demo/pyodide.js",
+      "module": "pyodide",
+      "evaluator": "runPython",
+      "pluginType": "language"
+    }
+  },
+  "lastExport": "2018-10-08T13:52:19.158Z"
+}
+
+%% md
+# Lecture-4-Pandas For Stats & ML
+
+%% plugin
+{
+  "languageId": "py",
+  "displayName": "python",
+  "codeMirrorMode": "python",
+  "keybinding": "p",
+  "url": "https://iodide.io/pyodide-demo/pyodide.js",
+  "module": "pyodide",
+  "evaluator": "runPython",
+  "pluginType": "language"
+}
+
+%% js
+pyodide.loadPackage('matplotlib')
+
+%% js
+pyodide.loadPackage('pandas')
+
+%% md
+# Statistics and Machine Learning
+
+Some operations are especially useful for statistics
+
+- `get_dummies`
+- `from_dummies` ([someday](https://github.com/pydata/pandas/issues/8745)?)
+- Categoricals
+- `sample`
+
+%% code {"language":"py"}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+pd.options.display.max_rows = 10
+
+%% md
+It's quite common to have categorical data (in the statistical sense), which must be transformed before putting them into an algorithm. There are a couple ways to handle this.
+
+### Categoricals
+
+This basically creates a mapping between the categories and integers. This sometimes makes sense if you're representing soemthing like responses to a survey where the responses are `bad`, `neutral` and `good`.
+
+%% code {"language":"py"}
+np.random.seed(27)
+s = pd.Series(np.random.choice(['bad', 'neutral', 'good'], size=40))
+s
+
+%% code {"language":"py"}
+np.random.seed(27)
+s = pd.Series(pd.Categorical(np.random.choice(['bad', 'neutral', 'good'], size=40),
+                             categories=['bad', 'neutral', 'good'], ordered=True))
+s
+
+%% md
+Categoricals can put inside Series or DataFrames just like any other column. The have a
+a special `.cat` namespace.
+
+%% code {"language":"py"}
+s.cat.categories
+
+%% code {"language":"py"}
+s.cat.codes
+
+%% code {"language":"py"}
+df = pd.concat([pd.DataFrame(np.random.randn(40, 3), columns=list('abc')),
+                s],
+               axis=1)
+df
+
+%% md
+Categoricals are still quite new. Other packages are starting to support them (notably seaborn and patsy).
+
+There is also `get_dummies`.
+
+%% code {"language":"py"}
+pd.get_dummies(s)
+
+%% code {"language":"py"}
+kinds = [
+    'A|B',
+    'A|B|C',
+    'C',
+    'B|A',
+    'A|B'
+]
+s = pd.Series(kinds)
+s
+
+%% code {"language":"py"}
+s.str.get_dummies(sep='|')
+</script>
+<div id='page'></div>
+<script src='https://iodide.io/stable/iodide.stable.js'></script>
+</body>
+</html>
